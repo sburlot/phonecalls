@@ -1,5 +1,4 @@
-PhoneCalls
-==========
+# Swisscom PhoneCalls
 
 If you have a Swisscom IP Phone, there's a option on the Swisscom portal to have a list of all your answered and missed calls.
 
@@ -16,9 +15,14 @@ Server Stuff
 
 - <b>swisscom_calls.php</b> should be made available via a webserver so the iOS app can use it.
 
+## Notes ##
+
+The Swisscom.pl script uses Prowl http://www.prowlapp.com to send notifications. Comment if you don't use it.
+
+Rename the swisscom_calls.php page and switch your server to HTTPS, so your data remains almost private (just kidding because NSA)
 
 The iOS app is for iPhone/IOS7.
 
-Note: It's my first ARC app and I feel dirty. I'm not in control of the memory management and I don't like it.
+It's my first ARC app and I feel dirty. I'm not in control of the memory management and I don't like it.
 
 No Storyboards, because.
