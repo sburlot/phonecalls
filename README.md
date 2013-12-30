@@ -4,7 +4,14 @@ If you have a Swisscom IP Phone, there's a option on the Swisscom portal to have
 
 These scripts and app will fetch the info from the Swisscom website, populate a database and feed the result to an iPhone app.
 
+The iPhone app shows all answered and missed calls, and if you grant access to your address book, the contact names are shown too.
+
 This is clearly a hack because Swisscom may change the format of the data provided.
+
+## 3rd Party Libraries
+- <b>AFNetworking</b>, because it works and the code is beautiful
+- <b>RegExCategories</b>, because I love Perl regexes and writing phoneNumber = [phoneNumber replace:RX(@"^022") with:@"+4122"] is intuitive if you know what $phoneNumber =~ s/^022/\+4122/ means.
+- <b>PRPAlertView</b> because UIAlertView and blocks are meant to live together.
 
 Server Stuff
 ------------
