@@ -15,7 +15,7 @@
 	}
 
 	$response = array();
-	$sql_query = "SELECT DATE_FORMAT(`date`,'%Y/%m/%d %H:%i:%S') as `date_formatted`, `number` FROM answered_calls ORDER by `date` DESC LIMIT 50";
+	$sql_query = "SELECT DATE_FORMAT(`date`,'%Y/%m/%d %H:%i:%S') as `date_formatted`, `number` FROM calls WHERE `missed` = 0 ORDER by `date` DESC LIMIT 30";
 	$result = mysql_query( $sql_query ) or die("SQL Error ".mysql_error());
 	$answered_calls = array();
 
@@ -24,7 +24,7 @@
 	}
 	$response['answered_calls'] = $answered_calls;
 
-	$sql_query = "SELECT DATE_FORMAT(`date`,'%Y/%m/%d %H:%i:%S') as `date_formatted`, `number` FROM missed_calls ORDER by `date` DESC LIMIT 50";
+	$sql_query = "SELECT DATE_FORMAT(`date`,'%Y/%m/%d %H:%i:%S') as `date_formatted`, `number` FROM calls WHERE `missed` = 1 ORDER by `date` DESC LIMIT 30";
 	$result = mysql_query( $sql_query ) or die("SQL Error ".mysql_error());
 	$missed_calls = array();
 	while ($row = mysql_fetch_array($result,MYSQL_ASSOC)) {

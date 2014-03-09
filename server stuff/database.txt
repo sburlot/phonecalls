@@ -3,22 +3,12 @@ SET time_zone = "+00:00";
 CREATE DATABASE IF NOT EXISTS `swisscom` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 USE `swisscom`;
 
-DROP TABLE IF EXISTS `answered_calls`;
-CREATE TABLE IF NOT EXISTS `answered_calls` (
+DROP TABLE IF EXISTS `calls`;
+CREATE TABLE IF NOT EXISTS `calls` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `missed` tinyint(1) NOT NULL,
   `date` datetime NOT NULL,
   `number` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`),
-  KEY `date` (`date`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
-
-DROP TABLE IF EXISTS `missed_calls`;
-CREATE TABLE IF NOT EXISTS `missed_calls` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `date` datetime NOT NULL,
-  `number` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `id` (`id`),
   KEY `date` (`date`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8;
