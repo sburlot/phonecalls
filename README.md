@@ -9,15 +9,7 @@ The iPhone app shows all answered and missed calls, and if you grant access to y
 This is clearly a hack because Swisscom may change the format of the data provided.
 
 ## 3rd Party Libraries
-<<<<<<< HEAD
-
-=======
-<<<<<<< HEAD
->>>>>>> FETCH_HEAD
 - <b>STHTTPRequest</b>, because it works and the code is simple (< 700 lines) and beautiful
-=======
-- <b>STHTTPRequest</b>, because it works and the code is simple and beautiful
->>>>>>> FETCH_HEAD
 - <b>RegExCategories</b>, because I love Perl regexes and writing phoneNumber = [phoneNumber replace:RX(@"^022") with:@"+4122"] is intuitive if you know what $phoneNumber =~ s/^022/\+4122/ means.
 - <b>PRPAlertView</b> because UIAlertView and blocks are meant to live together.
 
