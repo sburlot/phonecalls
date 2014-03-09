@@ -10,6 +10,6 @@
 
 @interface DTCCallViewController : UITableViewController
 
-@property (strong, nonatomic) NSString *callKind;
+@property(strong, nonatomic) NSString* callKind;
 
 @end

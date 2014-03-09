@@ -14,10 +14,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+
     self.callKind = @"answered_calls";
     self.title = @"Appels Reçus";
-
 }
 
 @end

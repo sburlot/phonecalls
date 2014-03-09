@@ -8,17 +8,23 @@
 
 #import <Foundation/Foundation.h>
 
-extern NSString * const DTCNetworkManagerRequestDone;
+typedef enum : NSInteger {
+	UnknownStatus = 0,
+    InternetNotReachableStatus,
+	HostNotReachableStatus,
+    ReachableStatus
+} DTCConnectionStatus;
 
 @interface DTCNetworkManager : NSObject
 
-@property (nonatomic) BOOL networkCallInProgress;
-+ (id)sharedInstance;
-- (void) loadFromServerWithSuccess:(void (^)(id responseObject))success
-                           failure:(void (^)(NSError *error))failure;
-- (void) getCallsForceReload:(BOOL)force
-                     success:(void (^)(id responseObject))success
-                     failure:(void (^)(NSError *error))failure;
+@property(nonatomic) BOOL networkCallInProgress;
+@property(nonatomic) DTCConnectionStatus status;
 
++ (id)sharedInstance;
+- (void)loadFromServerWithSuccess:(void (^)(id responseObject))success
+                          failure:(void (^)(NSDictionary *storedObject, NSError* error))failure;
+- (void)getCallsForceReload:(BOOL)force
+                    success:(void (^)(id responseObject))success
+                    failure:(void (^)(NSDictionary *storedObject, NSError* error))failure;
 
 @end

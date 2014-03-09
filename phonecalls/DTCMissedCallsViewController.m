@@ -14,10 +14,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+
     self.callKind = @"missed_calls";
     self.title = @"Appels Manqués";
-    
 }
 
 @end

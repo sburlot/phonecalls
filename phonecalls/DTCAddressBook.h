@@ -12,12 +12,12 @@
 
 @interface DTCAddressBook : NSObject
 
-@property (nonatomic, assign) ABAddressBookRef addressBook;
-@property (nonatomic) NSDictionary *contactList;
+@property(nonatomic, assign) ABAddressBookRef addressBook;
+@property(nonatomic) NSDictionary* contactList;
 
-+ (id) sharedInstance;
-- (void) fetchAllAddressBookRecords;
--(void) checkAddressBookAccess;
-- (NSDictionary *) checkPhoneCalls:(NSDictionary *)phoneCalls;
++ (id)sharedInstance;
+- (void)fetchAllAddressBookRecords;
+- (void)checkAddressBookAccess;
+- (NSDictionary*)checkPhoneCalls:(NSDictionary*)phoneCalls;
 
 @end

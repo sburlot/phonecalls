@@ -62,7 +62,7 @@ $dbh->disconnect();
 #
 sub get_calls {
 
-		my $url = "https://sam.sso.bluewin.ch/my/data/VoipBlacklist?mode=showCallList";
+		my $url = "https://www1.swisscom.ch/sam/online/app/FirstLineVoip?mode=showCallList&lang=en";
 		my $request = GET $url;
 		my $response = $ua->request($request);
 
@@ -76,66 +76,41 @@ sub get_calls {
 		$dom->parse($response->content);
     # table id=incommingCallTable/tbody/tr
 
-		my $tr;
+		my $div;
+		my @missed_calls = ();
 
-	  print "Incoming calls\n";
+	  print "Phone Calls\n";
 
-		my $sth_insert = $dbh->prepare("insert into answered_calls (date,number) values(?,?)");
-		my $sth_select = $dbh->prepare("select id from answered_calls where date=? and number=?");
-    my $line=0;
-	  for $tr ($dom->find('table[id=incommingCallTable] tr')->each) {
-	  	# first 2 lines are headers
-	  	next if $line++ < 2;
-#	  	print "--- Line $line\n";
-#	  	say $tr->children('td.text.line')->pluck('text')->join(', ');
-			my $date = $tr->children('td.text.line')->[0]->text;
-			my $phone = $tr->children('td.text.line')->[1]->text;
+		my $sth_insert = $dbh->prepare("insert into calls (missed, date,number) values(?,?,?)");
+		my $sth_select = $dbh->prepare("select id from calls where missed=? and date=? and number=?");
+	  for $div ($dom->find('div.sam-akkordeon div.row-fluid')->each) {
+			my @attrs = split(' ', $div->find('label.span4')->attr('class'));
+			my $missed = 0;
+			if ("sam-missed-call" ~~ @attrs) {
+				$missed = 1;
+				print "Missed call ";
+			} else {
+				print "Incoming call ";
+			}
+			my $date = $div->find('div.span5')->text;
+			my $phone = $div->find('label.span4')->text;
 			my $parsed_date = strptime('%d.%m.%Y %H:%M', $date);
 			print "$date ($parsed_date) => $phone ";
-			$sth_select->execute($parsed_date, $phone);
+			$sth_select->execute($missed, $parsed_date, $phone);
 			if ($sth_select->rows == 0) {
-				$sth_insert->execute($parsed_date, $phone);
+				$sth_insert->execute($missed, $parsed_date, $phone);
 				print " inserted\n";
+				if ($missed == 1) {
+					$phone =~ s/\+41 /0/gi;
+					push @missed_calls, $phone;
+				}
 			} else {
 				print " not inserted\n";
 			}
-			
-#	  	for my $td ($tr->children('td')->each) {
-#		  	print "TD:" . $td->text . "\n";
-#		  }
 	  }
 
 		$sth_insert->finish(); 
 		$sth_select->finish(); 
-	  $line = 0;
-		
-		my @missed_calls = ();
-		
-		$sth_insert = $dbh->prepare("insert into missed_calls (date,number) values(?,?)");
-		$sth_select = $dbh->prepare("select id from missed_calls where date=? and number=?");
-	  print "\n\nMissed calls\n";
-	  for $tr ($dom->find('table[id=missedCallsTable] tr')->each) {
-	  	# first 2 lines are headers
-	  	next if $line++ < 2;
-#	  	print "--- Line $line\n";
-#	  	say $tr->children('td.text.line')->pluck('text')->join(', ');
-			my $date = $tr->children('td.text.line')->[0]->text;
-			my $phone = $tr->children('td.text.line')->[1]->text;
-			my $parsed_date = strptime('%d.%m.%Y %H:%M', $date);
-			$sth_select->execute($parsed_date, $phone);
-			print "$date ($parsed_date) => $phone ";
-			if ($sth_select->rows == 0) {
-				print " inserted\n";
-				$sth_insert->execute($parsed_date, $phone);
-				$phone =~ s/\+41 /0/gi;
-				push @missed_calls, $phone;
-			} else {
-				print " not inserted\n";
-			}
-#	  	for my $td ($tr->children('td')->each) {
-#		  	print "TD:" . $td->text . "\n";
-#		  }
-	  }
 	  
 	  my @unique = do { my %seen; grep { !$seen{$_}++ } @missed_calls };
 	  my $num_calls = scalar(@unique);
@@ -148,13 +123,17 @@ sub get_calls {
 
 sub login {
 
-    my $url = 'https://sam.sso.bluewin.ch/my/data/MyData?lang=en&amp;service=MyData&amp;mode=';
+		# allow redirects from POST (not allowd by default)
+		push @{ $ua->requests_redirectable }, 'POST';
+    my $url = 'https://login.sso.bluewin.ch:443/login?SNA=sam';
 
     my %parameters = (method => 'POST',
-    									count_tries => '0',
-                      username => $swisscom_login,
-                      password => $swisscom_pwd,
-                      p => 1);
+    									"count_tries" => '0',
+    									"L" => "en",
+                      "username" => $swisscom_login,
+                      "password" => $swisscom_pwd,
+                      "p" => "true",
+                      "anmelden" => "Login");
 
     my $request = POST $url, \%parameters;
     $request->content_type('application/x-www-form-urlencoded;charset=utf-8');
@@ -164,8 +143,7 @@ sub login {
     		print Dumper($response);
         die "Failed to get url - $response->code, $response->status_line";
     }
-
-#    print $response->content, "\n";
+		print "Login: success\n";
 }
 
 sub send_notification ($$) {
