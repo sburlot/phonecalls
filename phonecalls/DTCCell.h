@@ -10,8 +10,8 @@
 
 @interface DTCCell : UITableViewCell
 
-@property (nonatomic) IBOutlet UILabel *nameLabel;
-@property (nonatomic) IBOutlet UILabel *phoneLabel;
-@property (nonatomic) IBOutlet UILabel *dateLabel;
+@property (nonatomic, weak) IBOutlet UILabel *nameLabel;
+@property (nonatomic, weak) IBOutlet UILabel *phoneLabel;
+@property (nonatomic, weak) IBOutlet UILabel *dateLabel;
 
 @end
