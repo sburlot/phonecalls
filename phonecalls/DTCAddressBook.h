@@ -19,5 +19,6 @@
 - (void)fetchAllAddressBookRecords;
 - (void)checkAddressBookAccess;
 - (NSDictionary*)checkPhoneCalls:(NSDictionary*)phoneCalls;
+- (void)reloadAllAddressBookRecords;
 
 @end

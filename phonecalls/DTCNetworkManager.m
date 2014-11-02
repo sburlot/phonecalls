@@ -138,6 +138,7 @@
     NSLog(@"interval: %.2f", [[NSDate date] timeIntervalSinceDate:last_update]);
     NSDictionary* responseDict = [[NSDictionary alloc] initWithContentsOfFile:path];
     if (force || (responseDict == nil) || ([[NSDate date] timeIntervalSinceDate:last_update] > 5 * 60)) {
+        [[DTCAddressBook sharedInstance] reloadAllAddressBookRecords];
         [self loadFromServerWithSuccess:success
                                 failure:failure];
     } else {

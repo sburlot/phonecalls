@@ -38,26 +38,26 @@
 - (void)checkAddressBookAccess
 {
     switch (ABAddressBookGetAuthorizationStatus()) {
-    // Update our UI if the user has granted access to their Contacts
-    case kABAuthorizationStatusAuthorized:
-        [self accessGrantedForAddressBook];
-        break;
-    // Prompt the user for access to Contacts if there is no definitive answer
-    case kABAuthorizationStatusNotDetermined:
-        [self requestAddressBookAccess];
-        break;
-    // Display a message if the user has denied or restricted access to Contacts
-    case kABAuthorizationStatusDenied:
-    case kABAuthorizationStatusRestricted: {
-        UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"HammerTime"
-                                                        message:@"Vous n'avez pas accès aux contacts."
-                                                       delegate:nil
-                                              cancelButtonTitle:@"OK"
-                                              otherButtonTitles:nil];
-        [alert show];
-    } break;
-    default:
-        break;
+            // Update our UI if the user has granted access to their Contacts
+        case kABAuthorizationStatusAuthorized:
+            [self accessGrantedForAddressBook];
+            break;
+            // Prompt the user for access to Contacts if there is no definitive answer
+        case kABAuthorizationStatusNotDetermined:
+            [self requestAddressBookAccess];
+            break;
+            // Display a message if the user has denied or restricted access to Contacts
+        case kABAuthorizationStatusDenied:
+        case kABAuthorizationStatusRestricted: {
+            UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"HammerTime"
+                                                            message:@"Vous n'avez pas accès aux contacts."
+                                                           delegate:nil
+                                                  cancelButtonTitle:@"OK"
+                                                  otherButtonTitles:nil];
+            [alert show];
+        } break;
+        default:
+            break;
     }
 }
 
@@ -82,6 +82,14 @@
 {
     // Load data from the plist file
     [self fetchAllAddressBookRecords];
+}
+
+//==========================================================================================
+- (void)reloadAllAddressBookRecords
+{
+    if (ABAddressBookGetAuthorizationStatus() == kABAuthorizationStatusAuthorized) {
+        [self fetchAllAddressBookRecords];
+    }
 }
 
 //==========================================================================================

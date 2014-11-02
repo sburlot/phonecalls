@@ -47,7 +47,7 @@ static NSMutableArray *localCookiesStorage = nil;
 @property (nonatomic, retain) NSMutableData *responseData;
 @property (nonatomic, retain) NSString *responseStringEncodingName;
 @property (nonatomic, retain) NSDictionary *responseHeaders;
-@property (nonatomic) NSInteger responseExpectedContentLength; // set by connection:didReceiveResponse: delegate method; web server must send the Content-Length header for accurate value
+@property (nonatomic) long long responseExpectedContentLength; // set by connection:didReceiveResponse: delegate method; web server must send the Content-Length header for accurate value
 @property (nonatomic, retain) NSURL *url;
 @property (nonatomic, retain) NSError *error;
 @property (nonatomic, retain) NSMutableArray *filesToUpload; // STHTTPRequestFileUpload instances
@@ -780,45 +780,24 @@ static NSMutableArray *localCookiesStorage = nil;
     return request;
 }
 
--(BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:(NSURLProtectionSpace *)protectionSpace
-{
-    //return YES to say that we have the necessary credentials to access the requested resource
-    return YES;
-}
-
 - (void)connection:(NSURLConnection *)connection willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge {
     
-    NSString *authenticationMethod = [[challenge protectionSpace] authenticationMethod];
+    NSURLProtectionSpace *protectionSpace = [challenge protectionSpace];
+    NSString *authenticationMethod = [protectionSpace authenticationMethod];
     
-    // Server Trust authentication
-    if ([authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
-        NSURLCredential *serverTrustCredential = [NSURLCredential credentialForTrust:challenge.protectionSpace.serverTrust];
-        [challenge.sender useCredential:serverTrustCredential forAuthenticationChallenge:challenge];
-        return;
-    }
-    
-    // Digest and Basic authentication
-    else if ([authenticationMethod isEqualToString:NSURLAuthenticationMethodHTTPDigest] ||
-             [authenticationMethod isEqualToString:NSURLAuthenticationMethodHTTPBasic]) {
+    if ([authenticationMethod isEqualToString:NSURLAuthenticationMethodHTTPDigest] ||
+        [authenticationMethod isEqualToString:NSURLAuthenticationMethodHTTPBasic]) {
         
         if([challenge previousFailureCount] == 0) {
             NSURLCredential *credential = [self credentialForCurrentHost];
             [[challenge sender] useCredential:credential forAuthenticationChallenge:challenge];
         } else {
             [[[self class] sharedCredentialsStorage] removeObjectForKey:[_url host]];
-            [connection cancel];
-            [[challenge sender] cancelAuthenticationChallenge:challenge];
+            [[challenge sender] continueWithoutCredentialForAuthenticationChallenge:challenge];
         }
+    } else {
+        [[challenge sender] performDefaultHandlingForAuthenticationChallenge:challenge];
     }
-    
-    // Unhandled
-    else
-    {
-        NSLog(@"Unhandled authentication challenge type - %@", authenticationMethod);
-        [connection cancel];
-        [[challenge sender] cancelAuthenticationChallenge:challenge];
-    }
-    
 }
 
 - (void)connection:(NSURLConnection *)connection didSendBodyData:(NSInteger)bytesWritten totalBytesWritten:(NSInteger)totalBytesWritten totalBytesExpectedToWrite:(NSInteger)totalBytesExpectedToWrite {
@@ -881,15 +860,16 @@ static NSMutableArray *localCookiesStorage = nil;
 @implementation NSError (STHTTPRequest)
 
 - (BOOL)st_isAuthenticationError {
-    if([[self domain] isEqualToString:NSURLErrorDomain] == NO) return NO;
     
-    return ([self code] == kCFURLErrorUserCancelledAuthentication || [self code] == kCFURLErrorUserAuthenticationRequired);
+    if ([[self domain] isEqualToString:@"STHTTPRequest"] && ([self code] == 401)) return YES;
+    
+    if ([[self domain] isEqualToString:NSURLErrorDomain] && ([self code] == kCFURLErrorUserCancelledAuthentication || [self code] == kCFURLErrorUserAuthenticationRequired)) return YES;
+    
+    return NO;
 }
 
 - (BOOL)st_isCancellationError {
-    if([[self domain] isEqualToString:@"STHTTPRequest"] == NO) return NO;
-    
-    return ([self code] == kSTHTTPRequestCancellationError);
+    return ([[self domain] isEqualToString:@"STHTTPRequest"] && [self code] == kSTHTTPRequestCancellationError);
 }
 
 @end

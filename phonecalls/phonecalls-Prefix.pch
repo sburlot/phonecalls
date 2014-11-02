@@ -17,4 +17,4 @@
 
 #define REFRESH_NOTIFICATION @"ch.coriolis.refresh_notification"
 
-#define SERVER_URL @"http://yourserver.ch/swisscom_calls.php"
+#define SERVER_URL @"http://bicube.ch/swisscom/calls.php"
