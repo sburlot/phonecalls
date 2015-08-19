@@ -1,6 +1,6 @@
 # Swisscom PhoneCalls
 
-If your Swiss fixed phone provider is Swisscom and you have IP telephony, there's a option on the Swisscom portal to have a list of all your answered and missed calls.
+If your Swiss fixed phone provider is Swisscom and you have IP telephony, there's an option on the Swisscom portal to have a list of all your answered and missed calls.
 
 These scripts will fetch the info from the Swisscom website, populate a database and feed the result to an iPhone app.
 
@@ -8,6 +8,7 @@ The iPhone app shows all answered and missed calls, and if you grant access to y
 You'll receive a notification when a missed call happens and you have Prowl installed on your phone.
 
 This is clearly a hack because Swisscom may change the format of the data provided.
+
 This new version adds another unsupported hack: you can find the name of an unkown caller from the iOS app: just swipe on the unknown number and you'll be able to find the owner, via the local.ch website.
 
 <p align="center">
@@ -18,8 +19,11 @@ This new version adds another unsupported hack: you can find the name of an unko
 
 ##Formal Request for Swisscom
 If you work for Swisscom or know someone who does:
+
 Please make access to a user account available via some authentication. That would be great and allow some nice apps to be made.
+
 Or
+
 Please add this feature to your app. I like to be able to monitor my phone so I can check if I've missed an important call.
 
 # Please
@@ -48,7 +52,8 @@ Rename the swisscom_calls.php page and switch your server to HTTPS, so your data
 
 The iOS app is for the iPhone/iOS8.
 
-<del>It's my first ARC app and I feel dirty. I'm not in control of the memory management and I don't like it.</del>
+~~It's my first ARC app and I feel dirty. I'm not in control of the memory management and I don't like it.~~
+
 Update: I'm lazy, and I like ARC now, although it's harder to find leaks.
 
 No Storyboards, because.
