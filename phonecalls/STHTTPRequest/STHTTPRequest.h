@@ -18,13 +18,21 @@ extern NSUInteger const kSTHTTPRequestDefaultTimeout;
 
 @class STHTTPRequest;
 
+typedef void (^sendRequestBlock_t)(STHTTPRequest *request);
 typedef void (^uploadProgressBlock_t)(NSInteger bytesWritten, NSInteger totalBytesWritten, NSInteger totalBytesExpectedToWrite);
-typedef void (^downloadProgressBlock_t)(NSData *data, NSInteger totalBytesReceived, NSInteger totalBytesExpectedToReceive);
+typedef void (^downloadProgressBlock_t)(NSData *data, NSUInteger totalBytesReceived, long long totalBytesExpectedToReceive);
 typedef void (^completionBlock_t)(NSDictionary *headers, NSString *body);
 typedef void (^completionDataBlock_t)(NSDictionary *headers, NSData *body);
 typedef void (^errorBlock_t)(NSError *error);
 
-@interface STHTTPRequest : NSObject <NSURLConnectionDelegate>
+typedef NS_ENUM(NSUInteger, STHTTPRequestCookiesStorage) {
+    STHTTPRequestCookiesStorageShared = 0,
+    STHTTPRequestCookiesStorageLocal = 1,
+    STHTTPRequestCookiesStorageNoStorage = 2,
+    STHTTPRequestCookiesStorageUndefined = NSUIntegerMax
+};
+
+@interface STHTTPRequest : NSObject <NSURLSessionDataDelegate>
 
 @property (copy) uploadProgressBlock_t uploadProgressBlock;
 @property (copy) downloadProgressBlock_t downloadProgressBlock;
@@ -33,29 +41,40 @@ typedef void (^errorBlock_t)(NSError *error);
 @property (copy) completionDataBlock_t completionDataBlock;
 
 // request
-@property (nonatomic, retain) NSString *HTTPMethod; // default: GET, or POST if POSTDictionary or files to upload
-@property (nonatomic, retain) NSMutableDictionary *requestHeaders;
-@property (nonatomic, retain) NSDictionary *POSTDictionary; // keys and values are NSString instances
-@property (nonatomic, retain) NSData *rawPOSTData; // eg. to post JSON contents
+@property (nonatomic, strong) NSString *HTTPMethod; // default: GET, overridden by POST if POSTDictionary or files to upload
+@property (nonatomic, strong) NSMutableDictionary *requestHeaders;
+@property (nonatomic, strong) NSDictionary *POSTDictionary; // keys and values are NSString instances
+@property (nonatomic, strong) NSDictionary *GETDictionary; // appended to the URL string
+@property (nonatomic, strong) NSData *rawPOSTData; // eg. to post JSON contents
 @property (nonatomic) NSStringEncoding POSTDataEncoding;
-@property (nonatomic, assign) NSUInteger timeoutSeconds;
+@property (nonatomic) NSTimeInterval timeoutSeconds; // ignored if 0
 @property (nonatomic) BOOL addCredentialsToURL; // default NO
 @property (nonatomic) BOOL encodePOSTDictionary; // default YES
-@property (nonatomic, retain, readonly) NSURL *url;
-@property (nonatomic) BOOL ignoreSharedCookiesStorage;
+@property (nonatomic) BOOL encodeGETDictionary; // default YES, set to NO if the parameters are already URL encoded
+@property (nonatomic, strong, readonly) NSURL *url;
 @property (nonatomic) BOOL preventRedirections;
+@property (nonatomic) STHTTPRequestCookiesStorage cookieStoragePolicyForInstance; // overrides globalCookiesStoragePolicy
+
++ (void)setBackgroundCompletionHandler:(void(^)())completionHandler forSessionIdentifier:(NSString *)sessionIdentifier;
+//+ (void(^)())backgroundCompletionHandlerForSessionIdentifier:(NSString *)sessionIdentifier;
 
 // response
 @property (nonatomic) NSStringEncoding forcedResponseEncoding;
 @property (nonatomic, readonly) NSInteger responseStatus;
-@property (nonatomic, retain, readonly) NSString *responseStringEncodingName;
-@property (nonatomic, retain, readonly) NSDictionary *responseHeaders;
-@property (nonatomic, retain) NSString *responseString;
-@property (nonatomic, retain, readonly) NSMutableData *responseData;
-@property (nonatomic, retain, readonly) NSError *error;
+@property (nonatomic, strong, readonly) NSString *responseStringEncodingName;
+@property (nonatomic, strong, readonly) NSDictionary *responseHeaders;
+@property (nonatomic, strong) NSString *responseString;
+@property (nonatomic, strong, readonly) NSMutableData *responseData;
+@property (nonatomic, strong, readonly) NSError *error;
+@property (nonatomic) long long responseExpectedContentLength; // set by connection:didReceiveResponse: delegate method; web server must send the Content-Length header for accurate value
 
-+ (STHTTPRequest *)requestWithURL:(NSURL *)url;
-+ (STHTTPRequest *)requestWithURLString:(NSString *)urlString;
+// cache
+@property (nonatomic) BOOL ignoreCache; // requests ignore cached responses and responses don't get cached
+
++ (instancetype)requestWithURL:(NSURL *)url;
++ (instancetype)requestWithURLString:(NSString *)urlString;
+
++ (void)setGlobalIgnoreCache:(BOOL)ignoreCache; // no cache at all when set, overrides the ignoreCache property
 
 - (NSString *)debugDescription; // logged when launched with -STHTTPRequestShowDebugDescription 1
 - (NSString *)curlDescription; // logged when launched with -STHTTPRequestShowCurlDescription 1
@@ -73,7 +92,9 @@ typedef void (^errorBlock_t)(NSError *error);
 - (NSArray *)sessionCookies;
 + (NSArray *)sessionCookiesInSharedCookiesStorage;
 + (void)deleteAllCookiesFromSharedCookieStorage;
-- (void)deleteSessionCookies;
++ (void)deleteAllCookiesFromLocalCookieStorage;
+- (void)deleteSessionCookies; // empty the cookie storage that is used
++ (void)setGlobalCookiesStoragePolicy:(STHTTPRequestCookiesStorage)cookieStoragePolicy;
 
 // Credentials
 + (NSURLCredential *)sessionAuthenticationCredentialsForURL:(NSURL *)requestURL;
@@ -95,6 +116,9 @@ typedef void (^errorBlock_t)(NSError *error);
 // Session
 + (void)clearSession; // delete all credentials and cookies
 
+// DEBUG
+- (NSURLRequest *)prepareURLRequest; // prepare the request according to the STHTTPRequest instance state
+
 @end
 
 @interface NSError (STHTTPRequest)
@@ -104,4 +128,8 @@ typedef void (^errorBlock_t)(NSError *error);
 
 @interface NSString (RFC3986)
 - (NSString *)st_stringByAddingRFC3986PercentEscapesUsingEncoding:(NSStringEncoding)encoding;
+@end
+
+@interface NSString (STUtilities)
+- (NSString *)st_stringByAppendingGETParameters:(NSDictionary *)parameters doApplyURLEncoding:(BOOL)doApplyURLEncoding;
 @end

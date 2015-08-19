@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -w
 
 # this script will:
 #
@@ -23,8 +23,9 @@ use FindBin;
 use File::Spec;
 
 use constant PROWL_API_KEY => 'thisisthekey';
-
 sub send_notification ($$);
+sub login();
+sub get_calls();
 
 ###########################################
 my $database = "swisscom" ;
@@ -37,16 +38,21 @@ my $swisscom_pwd = 'mission404';
 ## NO USER SERVICEABLE PARTS BELOW
 ###########################################
 
-$ENV{'PERL_LWP_SSL_VERIFY_HOSTNAME'} = 0;
+$ENV{'PERL_LWP_SSL_VERIFY_HOSTNAME'} = 1;
+#print $ENV{'HTTPS_CA_DIR'} . "\n";
+#print $ENV{'HTTPS_CA_FILE'} . "\n";
 
-my $cj = HTTP::Cookies->new(file => 'cookieslwp', autosave => 1, ignore_discard => 1);
+my $cj = HTTP::Cookies->new(file => '/tmp/cookieslwp', autosave => 1, ignore_discard => 1);
 my $ua = LWP::UserAgent->new;
+$ua->agent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.74.9 (KHTML, like Gecko) Version/7.0.2 Safari/537.74.9');
+
+#$ua->ssl_opts('verify_hostname' => 1);
 $ua->cookie_jar($cj);
 
 $ua->default_header('Content-Type' => 'text/plain;charset=UTF-8');
 
-my $dbh = DBI->connect('DBI:mysql:' . $database, $db_user, $dp_pwd
-	           ) || die "Could not connect to database: $DBI::errstr";
+my $dbh = DBI->connect('DBI:mysql:' . $database, $db_user, $dp_pwd) ||
+						die "Could not connect to database: $DBI::errstr";
 
 # so the cookie file is store next to the script
 my $script_dir = $FindBin::Bin;
@@ -60,12 +66,13 @@ $dbh->disconnect();
 #
 # get the list of answered and missed calls
 #
-sub get_calls {
+sub get_calls() {
 
-		my $url = "https://www1.swisscom.ch/sam/online/app/FirstLineVoip?mode=showCallList&lang=en";
+		my $url = "https://www1.swisscom.ch/sam/online/app/VoipCallList";
 		my $request = GET $url;
 		my $response = $ua->request($request);
 
+#    print Dumper($response);
 		if (!$response->is_success) {
 				print Dumper($response);
 				die "Failed to get url - $response->code, $response->status_line";
@@ -84,7 +91,7 @@ sub get_calls {
 		my $sth_insert = $dbh->prepare("insert into calls (missed, date,number) values(?,?,?)");
 		my $sth_select = $dbh->prepare("select id from calls where missed=? and date=? and number=?");
 	  for $div ($dom->find('div.sam-akkordeon div.row-fluid')->each) {
-			my @attrs = split(' ', $div->find('label.span4')->attr('class'));
+			my @attrs = split(' ', $div->find('label.span4')->map( attr => 'class')->join(" "));
 			my $missed = 0;
 			if ("sam-missed-call" ~~ @attrs) {
 				$missed = 1;
@@ -92,8 +99,8 @@ sub get_calls {
 			} else {
 				print "Incoming call ";
 			}
-			my $date = $div->find('div.span5')->text;
-			my $phone = $div->find('label.span4')->text;
+			my $date = $div->find('div.span5')->map('text')->join('');
+			my $phone = $div->find('label.span4')->map('text')->join('');
 			my $parsed_date = strptime('%d.%m.%Y %H:%M', $date);
 			print "$date ($parsed_date) => $phone ";
 			$sth_select->execute($missed, $parsed_date, $phone);
@@ -121,11 +128,11 @@ sub get_calls {
 	  }
 }
 
-sub login {
+sub login() {
 
-		# allow redirects from POST (not allowd by default)
+		# allow redirects from POST (not allowed by default)
 		push @{ $ua->requests_redirectable }, 'POST';
-    my $url = 'https://login.sso.bluewin.ch:443/login?SNA=sam';
+    my $url = 'https://login.sso.bluewin.ch/login?SNA=sam&RURL=https%3A%2F%2Fwww1.swisscom.ch%2Fsam%2Fonline%2Fapp%2FMyData%3Flogin%26lang%3Den%26nevistokenconsume&L=en&pps=desktop';
 
     my %parameters = (method => 'POST',
     									"count_tries" => '0',
@@ -138,6 +145,7 @@ sub login {
     my $request = POST $url, \%parameters;
     $request->content_type('application/x-www-form-urlencoded;charset=utf-8');
     my $response = $ua->request($request);
+#    print Dumper($response);
 
     if (!$response->is_success) {
     		print Dumper($response);

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D405E18F1B80A0F700FFD72A /* DTCCallerInfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D405E18D1B80A0F700FFD72A /* DTCCallerInfoViewController.m */; };
+		D405E1901B80A0F700FFD72A /* DTCCallerInfoViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = D405E18E1B80A0F700FFD72A /* DTCCallerInfoViewController.xib */; };
 		D419B6C4186EEEAD00A914CD /* DTCNetworkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D419B6C3186EEEAD00A914CD /* DTCNetworkManager.m */; };
 		D419B6C81870875B00A914CD /* DTCCallViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D419B6C71870875B00A914CD /* DTCCallViewController.m */; };
 		D4244061186D76B500ED713D /* DTCAddressBook.m in Sources */ = {isa = PBXBuildFile; fileRef = D4244060186D76B500ED713D /* DTCAddressBook.m */; };
@@ -36,6 +38,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		D405E18C1B80A0F700FFD72A /* DTCCallerInfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTCCallerInfoViewController.h; sourceTree = "<group>"; };
+		D405E18D1B80A0F700FFD72A /* DTCCallerInfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTCCallerInfoViewController.m; sourceTree = "<group>"; };
+		D405E18E1B80A0F700FFD72A /* DTCCallerInfoViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = DTCCallerInfoViewController.xib; sourceTree = "<group>"; };
 		D419B6C2186EEEAD00A914CD /* DTCNetworkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTCNetworkManager.h; sourceTree = "<group>"; };
 		D419B6C3186EEEAD00A914CD /* DTCNetworkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DTCNetworkManager.m; sourceTree = "<group>"; };
 		D419B6C61870875B00A914CD /* DTCCallViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DTCCallViewController.h; sourceTree = "<group>"; };
@@ -178,6 +183,9 @@
 				D419B6C5186F258A00A914CD /* Cells */,
 				D49BCBCA186732C900053424 /* DTCAppDelegate.h */,
 				D49BCBCB186732C900053424 /* DTCAppDelegate.m */,
+				D405E18C1B80A0F700FFD72A /* DTCCallerInfoViewController.h */,
+				D405E18D1B80A0F700FFD72A /* DTCCallerInfoViewController.m */,
+				D405E18E1B80A0F700FFD72A /* DTCCallerInfoViewController.xib */,
 				D419B6C2186EEEAD00A914CD /* DTCNetworkManager.h */,
 				D419B6C3186EEEAD00A914CD /* DTCNetworkManager.m */,
 				D424405F186D76B500ED713D /* DTCAddressBook.h */,
@@ -295,6 +303,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D49BCBD7186732C900053424 /* Images.xcassets in Resources */,
+				D405E1901B80A0F700FFD72A /* DTCCallerInfoViewController.xib in Resources */,
 				D49BCBC6186732C900053424 /* InfoPlist.strings in Resources */,
 				D4D83D6C186DE18000573CAE /* DTCCell.xib in Resources */,
 			);
@@ -338,6 +347,7 @@
 				D419B6C81870875B00A914CD /* DTCCallViewController.m in Sources */,
 				D4BF50DA19C8688E003B9B44 /* SWUtilityButtonView.m in Sources */,
 				D4477F61186E3F21008FADCF /* PRPAlertView.m in Sources */,
+				D405E18F1B80A0F700FFD72A /* DTCCallerInfoViewController.m in Sources */,
 				D480213A18B145100056B0F7 /* Reachability.m in Sources */,
 				D4BF50D919C8688E003B9B44 /* SWUtilityButtonTapGestureRecognizer.m in Sources */,
 				D49BCBC8186732C900053424 /* main.m in Sources */,

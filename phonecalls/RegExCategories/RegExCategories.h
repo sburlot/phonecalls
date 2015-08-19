@@ -81,16 +81,16 @@
  */
 
 @interface RxMatch : NSObject
-@property (retain) NSString* value;    /* The substring that matched the expression. */
-@property (assign) NSRange   range;    /* The range of the original string that was matched. */
-@property (retain) NSArray*  groups;   /* Each object is an RxMatchGroup. */
-@property (retain) NSString* original; /* The full original string that was matched against.  */
+@property (nonatomic, copy)     NSString* value;    /* The substring that matched the expression. */
+@property (nonatomic, assign)   NSRange   range;    /* The range of the original string that was matched. */
+@property (nonatomic, copy)     NSArray*  groups;   /* Each object is an RxMatchGroup. */
+@property (nonatomic, copy)     NSString* original; /* The full original string that was matched against.  */
 @end
 
 
 @interface RxMatchGroup : NSObject
-@property (retain) NSString* value;
-@property (assign) NSRange range;
+@property (nonatomic, copy)   NSString* value;
+@property (nonatomic, assign) NSRange range;
 @end
 
 
@@ -113,6 +113,9 @@
  *
  * ie.
  * Rx* rx = [[Rx alloc] initWithString:@"\d+"];
+ * 
+ * Swift:
+ * var rx = NSRegularExpression(pattern:"\d+");
  */
 
 - (NSRegularExpression*) initWithPattern:(NSString*)pattern;
@@ -123,6 +126,9 @@
  *
  * ie.
  * Rx* rx = [Rx rx:@"\d+"];
+ * 
+ * Swift:
+ * var rx = NSRegularExpression.rx("\d+");
  */
 
 + (NSRegularExpression*) rx:(NSString*)pattern;
@@ -134,6 +140,9 @@
  *
  * ie.
  * Rx* rx = [Rx rx:@"\d+" ignoreCase:YES];
+ * 
+ * Swift:
+ * var rx = NSRegularExpression.rx("\d+", ignoreCase: true);
  */
 
 + (NSRegularExpression*) rx:(NSString*)pattern ignoreCase:(BOOL)ignoreCase;
@@ -144,6 +153,9 @@
  *
  * ie.
  * Rx* rx = [Rx rx:@"\d+" options:NSRegularExpressionCaseInsensitive];
+ * 
+ * Swift:
+ * var rx = NSRegularExpression.rx("\d+", options: .CaseInsensitive);
  */
 
 + (NSRegularExpression*) rx:(NSString*)pattern options:(NSRegularExpressionOptions)options;
@@ -160,6 +172,10 @@
  * ie.
  * Rx* rx = RX(@"\d+");
  * BOOL isMatch = [rx isMatch:@"Dog #1"]; // => true
+ * 
+ * Swift:
+ * var rx = NSRegularExpression.rx("\d+");
+ * var isMatch = rx.isMatch("Dog #1"); // => true
  */
 
 - (BOOL) isMatch:(NSString*)matchee;
@@ -188,7 +204,7 @@
 
 
 /**
- * Replaces all occurances in a string with a replacement string.
+ * Replaces all occurrences in a string with a replacement string.
  *
  * ie.
  * NSString* result = [RX(@"ruf+") replace:@"ruf ruff!" with:@"meow"];
@@ -199,7 +215,7 @@
 
 
 /**
- * Replaces all occurances of a regex using a block. The block receives the match
+ * Replaces all occurrences of a regex using a block. The block receives the match
  * and should return the replacement.
  *
  * ie.
@@ -211,7 +227,7 @@
 
 
 /**
- * Replaces all occurances of a regex using a block. The block receives a RxMatch object
+ * Replaces all occurrences of a regex using a block. The block receives a RxMatch object
  * that contains all the details of the match and should return a string
  * which is what the match is replaced with.
  *
@@ -349,7 +365,7 @@
 
 
 /**
- * Replaces all occurances of a regex with a replacement string.
+ * Replaces all occurrences of a regex with a replacement string.
  *
  * ie.
  * NSString* result = [@"ruf ruff!" replace:RX(@"ruf+") with:@"meow"];
@@ -360,7 +376,7 @@
 
 
 /**
- * Replaces all occurances of a regex using a block. The block receives the match
+ * Replaces all occurrences of a regex using a block. The block receives the match
  * and should return the replacement.
  *
  * ie.
@@ -372,7 +388,7 @@
 
 
 /**
- * Replaces all occurances of a regex using a block. The block receives an RxMatch
+ * Replaces all occurrences of a regex using a block. The block receives an RxMatch
  * object which contains all of the details for each match and should return a string
  * which is what the match is replaced with.
  *

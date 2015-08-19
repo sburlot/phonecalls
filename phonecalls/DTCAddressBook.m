@@ -107,7 +107,10 @@
         NSString* lastName = (__bridge NSString*)ABRecordCopyValue(ref, kABPersonLastNameProperty);
         NSString* companyName = (__bridge NSString*)ABRecordCopyValue(ref, kABPersonOrganizationProperty);
         if ((firstName == NULL) && (lastName == NULL)) {
-            [displayName appendString:companyName];
+            if (companyName != NULL)
+                [displayName appendString:companyName];
+            else
+                NSLog(@"WAT");
         } else {
             if (firstName != NULL) {
                 [displayName appendString:firstName];
@@ -122,6 +125,8 @@
 
         //        NSLog(@"Name %@ %@ (%@) => %@", firstName, lastName, companyName, displayName);
         ABMultiValueRef phones = ABRecordCopyValue(ref, kABPersonPhoneProperty);
+        // This regex should match any swiss phone number.
+        Rx* rx = [Rx rx:@"^0((?:2[12467])|(?:3[1-4])|(?:4[134])|(?:5[1,2,5,6,8])|(?:6[1-2])|(?:7[1,6-9])|81|89)"];
         for (CFIndex j = 0; j < ABMultiValueGetCount(phones); j++) {
             CFStringRef locLabel1 = ABMultiValueCopyLabelAtIndex(phones, j);
             CFStringRef phoneNumberRef = ABMultiValueCopyValueAtIndex(phones, j);
@@ -129,18 +134,7 @@
                 NSString* phoneNumber = (__bridge NSString*)phoneNumberRef;
                 phoneNumber = [phoneNumber replace:RX(@"\\s+|\\(|\\)|-|\\/|\\.")
                                               with:@""];
-                phoneNumber = [phoneNumber replace:RX(@"^021")
-                                              with:@"+4121"];
-                phoneNumber = [phoneNumber replace:RX(@"^022")
-                                              with:@"+4122"];
-                phoneNumber = [phoneNumber replace:RX(@"^079")
-                                              with:@"+4179"];
-                phoneNumber = [phoneNumber replace:RX(@"^076")
-                                              with:@"+4176"];
-                phoneNumber = [phoneNumber replace:RX(@"^077")
-                                              with:@"+4177"];
-                phoneNumber = [phoneNumber replace:RX(@"^00")
-                                              with:@"+"];
+                phoneNumber = [phoneNumber replace:rx with:@"+41"];
                 NSString* phoneLabel1 = (__bridge NSString*)ABAddressBookCopyLocalizedLabel(locLabel1);
                 //                NSLog(@"%@ (%@) => %@", displayName, phoneLabel1, phoneNumber);
                 [tempDictionary setObject:[NSString stringWithFormat:@"%@ (%@)", displayName, phoneLabel1]
