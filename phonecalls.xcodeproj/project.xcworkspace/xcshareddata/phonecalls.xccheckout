@@ -11,17 +11,17 @@
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>AC9963DC6419FE3CA8F226488A0B7850A8C1E119</key>
-		<string>ssh://github.com/sburlot/phonecalls.git</string>
+		<string>github.com:sburlot/phonecalls.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>phonecalls.xcodeproj/project.xcworkspace</string>
+	<string>phonecalls.xcodeproj</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>AC9963DC6419FE3CA8F226488A0B7850A8C1E119</key>
 		<string>../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>ssh://github.com/sburlot/phonecalls.git</string>
+	<string>github.com:sburlot/phonecalls.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>111</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>

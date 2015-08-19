@@ -18,6 +18,8 @@
 {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
 
+    [[UINavigationBar appearance] setTitleTextAttributes:@{NSFontAttributeName:[UIFont fontWithName:@"AvenirNext-Medium" size:15.0f]} ];
+
     UIViewController* viewController1 = [[DTCAnsweredCallsViewController alloc] init];
     UINavigationController* navController1 = [[UINavigationController alloc] initWithRootViewController:viewController1];
     navController1.title = @"Appels Reçus";

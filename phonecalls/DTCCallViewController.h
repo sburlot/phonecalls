@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SWTableViewCell.h"
 
-@interface DTCCallViewController : UITableViewController
+@interface DTCCallViewController : UITableViewController <SWTableViewCellDelegate, UIPopoverPresentationControllerDelegate>
 
 @property(strong, nonatomic) NSString* callKind;
 
